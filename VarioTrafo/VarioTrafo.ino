@@ -73,8 +73,12 @@ float adjCurrentLimit = 2;  // Amp
 int maxCurrent = 2;         // Amp
 int alertCurrent = 2.5;     // Amp
 
+unsigned int debugId = 0;   // debug id counter
 
 void setup() {
+
+  Serial.begin(115200);
+  
   pinMode(rLED, OUTPUT);
   pinMode(gLED, OUTPUT);
   pinMode(bLED, OUTPUT);
@@ -247,6 +251,38 @@ void relays() {
   while(nAdjButtonValue) {
     digitalWrite(nAdjRelay, HIGH);
   }
+}
+
+void serialDebugger() {
+  Serial.println("Readout ID: " + debugId);
+  Serial.println("bool adjButtonValue: " + adjButtonValue );
+  Serial.println("bool nAdjButtonValue: " + nAdjButtonValue );
+  Serial.println("bool alert: " + alert );
+  
+  Serial.println();
+
+// look at ads1115 example
+
+//  Serial.println("pin A0: " + adjU + " V");
+//  Serial.println("pin A1: " + adjI + " V");
+//  Serial.println("pin A2: " + nAdjI + " V");
+   
+  Serial.println();
+  
+//  Serial.println("float adjU: " + adjU + " V");
+//  Serial.println("float adjI: " + adjI + " A");
+//  Serial.println("float nAdjI: " + nAdjI + " A");
+//  Serial.println("float I: " + I + " A");
+//  Serial.println("float nAdjU: " + nAdjU + " V");
+    
+  Serial.println();
+  
+//  Serial.println("float adjCurrentLimit: " + adjCurrentLimit + " A");
+//  Serial.println("int maxCurrent: " + maxCurrent + " A");
+//  Serial.println("int alertCurrent: " + alertCurrent + " A");
+  
+  Serial.println("\n");
+  ++debugId;
 }
 
 void loop() {
