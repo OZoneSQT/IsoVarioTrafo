@@ -34,32 +34,20 @@
  */
 
 #include "ACS712.h"
-#include "ADS1X15.h"
 #include "ZMPT101B.h"
-
-
- /* 
-  *  Choose you ADC
-  *  ADS1013 ADS(0x48);
-  *  ADS1014 ADS(0x48);
-  *  ADS1015 ADS(0x48);
-  *  ADS1113 ADS(0x48);
-  *  ADS1114 ADS(0x48);
-  */
-ADS1115 adc(0x48);
-
-// Voltage Sensor, 0 < 250V AC, 2,5V = 250V
-ZMPT101B voltageSensor(adc.readADC(0));
 
  /*
   *  choose you current sensor
-  *  ACS712_05B
-  *  ACS712_20A
-  *  ACS712_30A
+  *  ACS712_05B - 185 mV/A
+  *  ACS712_20A - 100 mV/A
+  *  ACS712_30A - 66 mV/A
   */
-ACS712 adjCurrentSensor(ACS712_05B, adc.readADC(1));
-ACS712 nAdjCurrentSensor(ACS712_05B, adc.readADC(2));
+ACS712 adjCurrentSensor(ACS712_05B, A1);
+ACS712 nAdjCurrentSensor(ACS712_05B, A2);
 
+// We have ZMPT101B sensor connected to A0 pin of arduino
+// Replace with your version if necessary
+ZMPT101B voltageSensor(A0);
 
 int rLED = 5;         // RGB-led pin R, via R220 resistor, PWM
 int gLED = 6;         // RGB-led pin G, via R220 resistor, PWM
@@ -103,16 +91,6 @@ void setup() {
   digitalWrite(adjButton, LOW);
   digitalWrite(nAdjButton, LOW);
 
-   /*
-  *  0 = 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
-  *  1 = 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
-  *  2 = 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
-  *  3 = 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
-  *  4 = 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
-  *  5 = 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
-  */
-  adc.setGain(5); 
-
   delay(100);
 
   initLED();
@@ -125,7 +103,7 @@ void setup() {
 
   initLED();
   
-  nAdjCurrentSensor.calibrate();
+  nAdjCurrentSensor.calibrate();  // Set 0A, current must not be flowing in circut
 
   // Signal setup is compleated
   initLED();
@@ -202,43 +180,31 @@ void calcAdjCurrentLimit() {
 }
 
 void colorCalc() {
-  
 float result = 0;
-unsigned int resolution = 65535; // 2 bytes / 0 to 65,535
 
   while(adjButtonValue || nAdjButtonValue) {
         
    if ( adjButtonValue == true && nAdjButtonValue == true ) {
      if( I > maxCurrent && adjI > adjCurrentLimit ) {
-       result = ( maxCurrent - adjI ) / resolution;
+       result = ( maxCurrent - adjI ) / 2;
      }
    }
    
    if ( adjButtonValue == true ) {
-     result = maxCurrent / resolution;
+     result = maxCurrent / 2;
    }
 
    if ( nAdjButtonValue == true ) {
-     result = adjCurrentLimit / resolution; 
+     result = adjCurrentLimit / 2; 
    }
 
     // (0, 255, 0) -> (+1, 0, 0) -> (255, 255, 0) -> (255, -1, 0) -> (255, 0, 0)
-    if ( result >= 32767 ){
-      rgbLED( getColorR(result), 255, 0);
-    } else if ( 32768 <= result ) {
-      rgbLED( 255, getColorR(result), 0);
+    if ( result >= 255 ){
+      rgbLED( result, 255, 0);
+    } else if ( 256 <= result ) {
+      rgbLED( 255, 255 - result, 0);
     }
   }
-}
-
-int getColorR(int value) {
-  unsigned int unit = 32767 / 255;
-  return (int)(value / unit);
-}
-
-int getColorG(int value) {
-  unsigned int unit = 65535 - 32767 / 255;
-  return (int)(255 - ( value / unit ));
 }
 
 void rgbLED(int r, int g, int b) {
@@ -246,7 +212,6 @@ void rgbLED(int r, int g, int b) {
   analogWrite(gLED, g);
   analogWrite(bLED, b);
 }
-
 
 void messurment() {
   adjU = voltageSensor.getVoltageAC();
