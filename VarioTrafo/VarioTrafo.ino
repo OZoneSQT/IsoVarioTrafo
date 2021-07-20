@@ -63,13 +63,13 @@ bool adjButtonValue = false;
 bool nAdjButtonValue = false;
 bool alert = false;
 
-float adjU = 0;
-float adjI = 0;
-float nAdjI = 0;
+float adjU;
+float adjI;
+float nAdjI;
 float I = 0;
 float nAdjU = 2.4;           // 240 V AC
 
-float adjCurrentLimit = 2;  // Amp
+float adjCurrentLimit;  // Amp
 int maxCurrent = 2;         // Amp
 int alertCurrent = 2.5;     // Amp
 
@@ -253,33 +253,45 @@ void relays() {
   }
 }
 
+// Debug / Calibrate 
 void serialDebugger() {
-  Serial.println("Readout ID: " + debugId);
-  Serial.println("bool adjButtonValue: " + adjButtonValue );
-  Serial.println("bool nAdjButtonValue: " + nAdjButtonValue );
-  Serial.println("bool alert: " + alert );
+  Serial.println((String)"Readout ID: " + debugId);
+  Serial.println((String)"bool adjButtonValue: " + adjButtonValue );
+  Serial.println((String)"bool nAdjButtonValue: " + nAdjButtonValue );
+  Serial.println((String)"bool alert: " + alert );
   
   Serial.println();
 
-// look at ads1115 example
+  Serial.println((String)"pin A0: " + digitalRead(A0) + " V");
+  Serial.println((String)"pin A1: " + digitalRead(A1) + " V");
+  Serial.println((String)"pin A2: " + digitalRead(A2) + " V");
 
-//  Serial.println("pin A0: " + adjU + " V");
-//  Serial.println("pin A1: " + adjI + " V");
-//  Serial.println("pin A2: " + nAdjI + " V");
-   
   Serial.println();
   
-//  Serial.println("float adjU: " + adjU + " V");
-//  Serial.println("float adjI: " + adjI + " A");
-//  Serial.println("float nAdjI: " + nAdjI + " A");
-//  Serial.println("float I: " + I + " A");
-//  Serial.println("float nAdjU: " + nAdjU + " V");
+  Serial.println((String)"float adjU: " + adjU + " V");
+  Serial.println((String)"float adjI: " + adjI + " A");
+  Serial.println((String)"float nAdjI: " + nAdjI + " A");
+  Serial.println((String)"float I: " + I + " A");
+  Serial.println((String)"float nAdjU: " + nAdjU + " V");
     
   Serial.println();
   
-//  Serial.println("float adjCurrentLimit: " + adjCurrentLimit + " A");
-//  Serial.println("int maxCurrent: " + maxCurrent + " A");
-//  Serial.println("int alertCurrent: " + alertCurrent + " A");
+  Serial.print((String)"float adjCurrentLimit: " + adjCurrentLimit + " A");
+  Serial.println((String)"int maxCurrent: " + maxCurrent + " A");
+  Serial.println((String)"int alertCurrent: " + alertCurrent + " A");
+
+  Serial.println();
+
+  Serial.println("Updated Sensor readout:");
+
+  Serial.print((String)"voltageSensor DC: " + voltageSensor.getVoltageDC() + " V");
+  Serial.print((String)"voltageSensor AC: " + voltageSensor.getVoltageAC() + " V");
+
+  Serial.print((String)"adj. Current DC: " + adjCurrentSensor.getCurrentDC() + " A");
+  Serial.print((String)"adj. Current AC: " + adjCurrentSensor.getCurrentAC() + " A");
+
+  Serial.print((String)"Current DC: " + nAdjCurrentSensor.getCurrentDC() + " A");
+  Serial.print((String)"Current AC: " + adjCurrentSensor.getCurrentAC() + " A");
   
   Serial.println("\n");
   ++debugId;
