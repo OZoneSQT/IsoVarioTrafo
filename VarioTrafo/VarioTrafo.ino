@@ -83,8 +83,6 @@ void setup() {
   analogWrite(bLED, 0);
   digitalWrite(adjRelay, LOW);
   digitalWrite(nAdjRelay, LOW);
-  digitalWrite(adjButton, LOW);
-  digitalWrite(nAdjButton, LOW);
 
   delay(100);
 
