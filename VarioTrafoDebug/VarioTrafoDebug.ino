@@ -62,7 +62,7 @@ float adjU;
 float adjI;
 float nAdjI;
 float I = 0;
-float nAdjU = 2.4;           // 240 V AC
+float nAdjU = 0.24;         // 0,24 = 24 V  2,4 = 240 V
 
 float adjCurrentLimit;  // Amp
 int maxCurrent = 2;         // Amp
